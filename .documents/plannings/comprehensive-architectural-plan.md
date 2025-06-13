@@ -152,6 +152,13 @@ Flow:
 - **Speech Recognition & Synthesis**: Primarily leverage Gemini Live API for bidirectional audio streaming and integrated Speech-to-Text (STT) and Text-to-Speech (TTS) capabilities. This provides a seamless, low-latency conversational experience directly with the AI model.
 - **Real-time Processing**: Gemini Live API is designed for real-time, interactive voice applications.
 
+#### State Management
+**Zustand**
+- **Rationale**: Lightweight, TypeScript-friendly state management for complex UI interactions
+- **Use Cases**: User session state, conversation history, assessment progress, real-time audio state
+- **Performance**: Minimal boilerplate, selective subscriptions, optimized re-renders
+- **Integration**: Perfect for managing voice conversation state and cross-component data sharing
+
 #### Form Management
 **React Hook Form + Zod**
 - **Validation**: Type-safe form validation
