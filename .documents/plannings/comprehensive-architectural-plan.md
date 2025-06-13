@@ -148,10 +148,9 @@ Flow:
 - **Customization**: Easy theming, utility-first approach
 
 #### Voice Integration
-**Web Speech API + OpenAI Whisper/Deepgram**
-- **Speech Recognition**: Browser-native with cloud backup
-- **Text-to-Speech**: ElevenLabs for natural voice synthesis
-- **Real-time Processing**: WebRTC for low-latency audio streaming
+**Google Gemini Live API & Speech-to-Text/Text-to-Speech**
+- **Speech Recognition & Synthesis**: Primarily leverage Gemini Live API for bidirectional audio streaming and integrated Speech-to-Text (STT) and Text-to-Speech (TTS) capabilities. This provides a seamless, low-latency conversational experience directly with the AI model.
+- **Real-time Processing**: Gemini Live API is designed for real-time, interactive voice applications.
 
 #### Form Management
 **React Hook Form + Zod**
@@ -160,10 +159,17 @@ Flow:
 - **Integration**: Seamless Next.js integration
 
 #### AI Integration
-**Google Gemini + Vercel AI SDK**
-- **Language Model**: Gemini 1.5 Pro for conversation and content generation
-- **SDK Integration**: Vercel AI SDK for streaming responses
-- **Fallback**: OpenAI GPT-4 as secondary option
+**Google Gemini 2.5 Models + Vertex AI SDK**
+- **Core Language Model**: Gemini 2.5 Pro for advanced reasoning, conversation, and multimodal content generation.
+- **Specialized Models & APIs**:
+    - **Gemini Live API**: For real-time, bidirectional audio streaming, enabling truly interactive voice conversations and immediate feedback. ([`https://ai.google.dev/gemini-api/docs/live`](https://ai.google.dev/gemini-api/docs/live))
+    - **URL Contextualization**: Gemini models can process content from URLs, allowing the platform to generate learning materials based on real-world articles, blog posts, or documentation. ([`https://ai.google.dev/gemini-api/docs/url-context`](https://ai.google.dev/gemini-api/docs/url-context))
+    - **Video Understanding**: Incorporate video content (e.g., short clips, dialogues) for comprehension exercises. Gemini can analyze video frames and audio. ([`https://ai.google.dev/gemini-api/docs/video-understanding`](https://ai.google.dev/gemini-api/docs/video-understanding))
+    - **Audio Understanding**: Process and understand various audio inputs beyond speech, such as environmental sounds or music, for richer contextual learning. ([`https://ai.google.dev/gemini-api/docs/audio`](https://ai.google.dev/gemini-api/docs/audio))
+    - **Image Understanding**: Generate vocabulary exercises, descriptive tasks, or cultural context from images. ([`https://ai.google.dev/gemini-api/docs/image-understanding`](https://ai.google.dev/gemini-api/docs/image-understanding))
+    - **Speech Generation (Text-to-Speech)**: Utilize Google's high-quality, natural-sounding TTS for AI tutor responses and audio content. ([`https://ai.google.dev/gemini-api/docs/speech-generation`](https://ai.google.dev/gemini-api/docs/speech-generation))
+- **SDK Integration**: Vertex AI SDK for robust interaction with Gemini models, including streaming, function calling, and managing multimodal inputs/outputs.
+- **Fallback**: Consider a smaller, efficient open-source model for less critical tasks if needed, but primary reliance is on Gemini 2.5.
 
 #### Vector Database
 **Zilliz Cloud (Managed Milvus)**
@@ -184,10 +190,10 @@ Flow:
 - **Performance**: Edge deployment, global CDN
 
 #### Audio Processing
-**ElevenLabs TTS + OpenAI Whisper STT**
-- **Text-to-Speech**: High-quality, multilingual voice synthesis
-- **Speech-to-Text**: Accurate transcription with language detection
-- **Real-time**: WebSocket connections for live audio processing
+**Google Cloud Speech-to-Text & Text-to-Speech (via Gemini Integration)**
+- **Text-to-Speech**: Utilize Gemini's integrated TTS capabilities or Google Cloud Text-to-Speech for high-quality, multilingual voice synthesis, ensuring natural and engaging AI tutor responses.
+- **Speech-to-Text**: Leverage Gemini's integrated STT or Google Cloud Speech-to-Text for accurate transcription with language detection, forming the input for conversational AI.
+- **Real-time**: Gemini Live API handles real-time audio processing for interactive conversations.
 
 #### Deployment Platform
 **Vercel**
@@ -198,16 +204,17 @@ Flow:
 ### Architectural Diagram (Conceptual)
 
 ```
-┌─────────────────┐    ┌──────────────────┐    ┌─────────────────┐
-│   Frontend      │    │   Backend API    │    │   AI Services   │
-│   (Next.js)     │◄──►│   (API Routes)   │◄──►│   (Gemini/GPT)  │
-│                 │    │                  │    │                 │
-│ • React UI      │    │ • Authentication │    │ • Content Gen   │
-│ • Voice Input   │    │ • Business Logic │    │ • Assessment    │
-│ • Real-time     │    │ • Data Validation│    │ • Conversation  │
-└─────────────────┘    └──────────────────┘    └─────────────────┘
-         │                       │                       │
-         │                       ▼                       │
+┌─────────────────┐    ┌──────────────────┐    ┌─────────────────────┐
+│   Frontend      │    │   Backend API    │    │   Gemini 2.5 AI    │
+│   (Next.js)     │◄──►│   (API Routes)   │◄──►│   Services          │
+│                 │    │                  │    │                     │
+│ • React UI      │    │ • Authentication │    │ • Live API Stream   │
+│ • Live Audio    │    │ • Business Logic │    │ • Multimodal AI     │
+│ • Real-time     │    │ • WebSocket Mgmt │    │ • Native Audio      │
+│ • Multimodal    │    │ • Stream Handler │    │ • Image/Video AI    │
+└─────────────────┘    └──────────────────┘    │ • Content Gen       │
+         │                       │              │ • Assessment        │
+         │                       ▼              └─────────────────────┘
          │              ┌──────────────────┐             │
          │              │   Data Layer     │             │
          │              │                  │             │
@@ -218,6 +225,7 @@ Flow:
          │              │ │ • User Data  │ │             │
          │              │ │ • Progress   │ │             │
          │              │ │ • Sessions   │ │             │
+         │              │ │ • Live State │ │             │
          │              │ └──────────────┘ │             │
          │              │                  │             │
          │              │ ┌──────────────┐ │             │
@@ -226,13 +234,14 @@ Flow:
          │              │ │              │ │             │
          │              │ │ • Content    │ │             │
          │              │ │ • Embeddings │ │             │
+         │              │ │ • Multimodal │ │             │
          │              │ │ • Similarity │ │             │
          │              │ └──────────────┘ │             │
          │              └──────────────────┘             │
          │                                               │
          └───────────────────────────────────────────────┘
-                    Audio Processing
-                 (ElevenLabs + Whisper)
+                    Gemini Live API
+              (Bidirectional Audio Streaming)
 ```
 
 ### Key Technical Considerations
@@ -647,47 +656,104 @@ class RealTimeAssessment {
 
 ### 2. Interactive Conversation Practice
 
-#### Voice-Enabled AI Conversations
+#### Live Voice-Enabled AI Conversations with Gemini 2.5
 ```typescript
-// Voice Conversation Handler
-class VoiceConversationEngine {
-  async handleVoiceInput(audioBlob: Blob, conversationContext: ConversationContext) {
-    try {
-      // 1. Transcribe audio using Whisper/Deepgram
-      const transcription = await this.transcribeAudio(audioBlob);
-      
-      // 2. Analyze pronunciation and fluency
-      const pronunciationAnalysis = await this.analyzePronunciation(audioBlob, transcription.text);
-      
-      // 3. Generate contextual AI response
-      const aiResponse = await this.generateConversationResponse({
-        userInput: transcription.text,
-        context: conversationContext,
-        proficiencyLevel: conversationContext.userProficiency
-      });
-      
-      // 4. Synthesize speech response
-      const audioResponse = await this.synthesizeSpeech(aiResponse.text);
-      
-      // 5. Store interaction for learning analytics
-      await this.storeInteraction({
-        userInput: transcription.text,
-        aiResponse: aiResponse.text,
-        pronunciationScore: pronunciationAnalysis.score,
-        conversationId: conversationContext.id
-      });
-      
-      return {
-        transcription: transcription.text,
-        aiResponse: aiResponse.text,
-        audioResponse,
-        pronunciationFeedback: pronunciationAnalysis,
-        suggestions: aiResponse.suggestions
-      };
-    } catch (error) {
-      console.error('Voice processing error:', error);
-      return this.handleVoiceError(error);
+// Gemini Live API Voice Conversation Handler
+class GeminiLiveConversationEngine {
+  private liveSession: GeminiLiveSession;
+  private audioStream: MediaStream;
+  
+  async initializeLiveSession(conversationContext: ConversationContext) {
+    // 1. Initialize Gemini Live API session
+    this.liveSession = await this.createGeminiLiveSession({
+      model: 'gemini-2.5-flash',
+      systemInstruction: this.buildLanguageTutorPrompt(conversationContext),
+      tools: ['pronunciation_analysis', 'grammar_correction', 'vocabulary_suggestion']
+    });
+    
+    // 2. Set up bidirectional audio streaming
+    this.audioStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    await this.liveSession.connectAudioStream(this.audioStream);
+    
+    // 3. Configure real-time response handling
+    this.liveSession.onAudioResponse = this.handleLiveAudioResponse.bind(this);
+    this.liveSession.onTextResponse = this.handleLiveTextResponse.bind(this);
+    this.liveSession.onToolCall = this.handleToolCall.bind(this);
+    
+    return this.liveSession;
+  }
+  
+  async handleLiveAudioResponse(audioData: ArrayBuffer, metadata: AudioMetadata) {
+    // 1. Play AI response audio in real-time
+    await this.playAudioResponse(audioData);
+    
+    // 2. Extract pronunciation feedback from metadata
+    const pronunciationFeedback = this.extractPronunciationFeedback(metadata);
+    
+    // 3. Update conversation context with real-time insights
+    await this.updateConversationContext({
+      aiResponseAudio: audioData,
+      pronunciationFeedback,
+      timestamp: Date.now()
+    });
+    
+    // 4. Trigger UI updates for real-time feedback
+    this.emitFeedbackUpdate(pronunciationFeedback);
+  }
+  
+  async handleLiveTextResponse(text: string, confidence: number) {
+    // 1. Display real-time transcription and AI responses
+    this.updateConversationUI({
+      type: 'ai_response',
+      text,
+      confidence,
+      timestamp: Date.now()
+    });
+    
+    // 2. Analyze conversation flow and suggest improvements
+    const conversationAnalysis = await this.analyzeConversationFlow(text);
+    
+    // 3. Store interaction with enhanced metadata
+    await this.storeEnhancedInteraction({
+      text,
+      confidence,
+      conversationAnalysis,
+      sessionId: this.liveSession.id
+    });
+  }
+  
+  async handleToolCall(toolName: string, parameters: any, result: any) {
+    switch (toolName) {
+      case 'pronunciation_analysis':
+        await this.displayPronunciationFeedback(result);
+        break;
+      case 'grammar_correction':
+        await this.showGrammarSuggestions(result);
+        break;
+      case 'vocabulary_suggestion':
+        await this.presentVocabularyEnhancement(result);
+        break;
     }
+  }
+  
+  private buildLanguageTutorPrompt(context: ConversationContext): string {
+    return `You are an expert language tutor using Gemini Live API. 
+    
+    Student Profile:
+    - Native Language: ${context.nativeLanguage}
+    - Target Language: ${context.targetLanguage}
+    - Proficiency Level: ${context.proficiencyLevel}
+    - Learning Goals: ${context.learningGoals}
+    
+    Instructions:
+    1. Engage in natural conversation appropriate for their level
+    2. Provide real-time pronunciation feedback using audio analysis
+    3. Correct grammar mistakes contextually and gently
+    4. Suggest vocabulary improvements when appropriate
+    5. Adapt difficulty based on their responses
+    6. Use multimodal capabilities when helpful (describe images, etc.)
+    
+    Always maintain an encouraging, patient tone while providing constructive feedback.`;
   }
 }
 ```
@@ -723,6 +789,193 @@ class MultimodalContentGenerator {
       estimatedDuration: this.calculateDuration(content),
       adaptationSuggestions: this.generateAdaptationSuggestions(learningStyle)
     };
+  }
+}
+```
+
+#### Multimodal Content Processing with Gemini 2.5
+```typescript
+// Gemini 2.5 Multimodal Learning Content Handler
+class GeminiMultimodalProcessor {
+  private geminiClient: GeminiClient;
+  
+  constructor() {
+    this.geminiClient = new GeminiClient({
+      model: 'gemini-2.5-flash',
+      multimodalCapabilities: ['image', 'video', 'audio', 'text'],
+      liveApiEnabled: true
+    });
+  }
+  
+  async processLearningContent(content: MultimodalContent, learningContext: LearningContext) {
+    try {
+      // 1. Prepare multimodal input for Gemini 2.5
+      const multimodalInput = await this.prepareMultimodalInput(content);
+      
+      // 2. Generate comprehensive analysis using Gemini's native capabilities
+      const analysis = await this.geminiClient.generateContent({
+        contents: multimodalInput,
+        systemInstruction: this.buildMultimodalLearningPrompt(learningContext),
+        tools: ['language_analysis', 'cultural_context', 'pronunciation_guide', 'url_context']
+      });
+      
+      // 3. Process different content types with unified understanding
+      const results = await this.processUnifiedAnalysis(analysis, content);
+      
+      // 4. Generate speech synthesis for pronunciation practice
+      const speechSynthesis = await this.generateSpeechWithGemini(results.keyPhrases, learningContext);
+      
+      return {
+        comprehensiveAnalysis: results,
+        learningOpportunities: await this.generateLearningOpportunities(results),
+        interactiveElements: await this.createInteractiveElements(results),
+        adaptiveFeedback: await this.generateAdaptiveFeedback(results, learningContext),
+        speechSynthesis: speechSynthesis,
+        urlContextAnalysis: await this.analyzeUrlContext(content.urls)
+      };
+    } catch (error) {
+      console.error('Multimodal processing error:', error);
+      return this.handleProcessingError(error);
+    }
+  }
+  
+  private async prepareMultimodalInput(content: MultimodalContent) {
+    const inputs = [];
+    
+    // Add text content
+    if (content.text) {
+      inputs.push({ type: 'text', data: content.text });
+    }
+    
+    // Add URL context using Gemini's URL understanding
+    if (content.urls?.length > 0) {
+      for (const url of content.urls) {
+        inputs.push({
+          type: 'url',
+          data: url,
+          analysisType: ['content_extraction', 'language_learning_opportunities', 'cultural_context']
+        });
+      }
+    }
+    
+    // Add image content with native Gemini image understanding
+    if (content.images?.length > 0) {
+      for (const image of content.images) {
+        inputs.push({
+          type: 'image',
+          data: await this.prepareImageForGemini(image),
+          analysisType: ['object_detection', 'text_extraction', 'cultural_context', 'language_learning_opportunities']
+        });
+      }
+    }
+    
+    // Add video content with native Gemini video understanding
+    if (content.video) {
+      inputs.push({
+        type: 'video',
+        data: await this.prepareVideoForGemini(content.video),
+        analysisType: ['scene_analysis', 'speech_recognition', 'gesture_analysis', 'cultural_nuances']
+      });
+    }
+    
+    // Add audio content with native Gemini audio processing
+    if (content.audio) {
+      inputs.push({
+        type: 'audio',
+        data: await this.prepareAudioForGemini(content.audio),
+        analysisType: ['speech_analysis', 'pronunciation_assessment', 'emotion_detection', 'accent_identification']
+      });
+    }
+    
+    return inputs;
+  }
+  
+  private async analyzeUrlContext(urls: string[]) {
+    if (!urls || urls.length === 0) return null;
+    
+    const urlAnalyses = await Promise.all(
+      urls.map(async (url) => {
+        const prompt = `Analyze this URL content for language learning opportunities:
+
+1. Extract key vocabulary and phrases
+2. Identify cultural context and references
+3. Suggest discussion topics
+4. Generate comprehension questions
+5. Identify grammar patterns used`;
+        
+        const analysis = await this.geminiClient.generateContent({
+          contents: [{ type: 'url', data: url }, { type: 'text', data: prompt }]
+        });
+        
+        return {
+          url,
+          keyVocabulary: analysis.vocabularyList,
+          culturalContext: analysis.culturalInsights,
+          discussionTopics: analysis.discussionPrompts,
+          comprehensionQuestions: analysis.questions,
+          grammarPatterns: analysis.grammarPoints
+        };
+      })
+    );
+    
+    return urlAnalyses;
+  }
+  
+  private async generateSpeechWithGemini(phrases: string[], context: LearningContext) {
+    const speechPrompt = `Generate natural speech audio for these phrases in ${context.targetLanguage}:
+${phrases.join('\n')}
+
+Requirements:
+1. Native speaker pronunciation
+2. Appropriate pace for language learners
+3. Clear articulation
+4. Natural intonation patterns`;
+    
+    const speechResponse = await this.geminiClient.generateSpeech({
+      text: speechPrompt,
+      voice: {
+        language: context.targetLanguage,
+        style: 'educational',
+        speed: 'moderate'
+      }
+    });
+    
+    return {
+      audioData: speechResponse.audioData,
+      phonetics: speechResponse.phoneticTranscription,
+      stressPatterns: speechResponse.stressMarkers,
+      intonationCues: speechResponse.intonationGuide
+    };
+  }
+  
+  private buildMultimodalLearningPrompt(context: LearningContext): string {
+    return `You are an expert language learning AI using Gemini 2.5's advanced multimodal capabilities including Live API, native speech generation, and comprehensive content understanding.
+    
+    Learning Context:
+    - Target Language: ${context.targetLanguage}
+    - Native Language: ${context.nativeLanguage}
+    - Proficiency Level: ${context.proficiencyLevel}
+    - Learning Focus: ${context.learningFocus}
+    - Cultural Interest: ${context.culturalInterest}
+    
+    Advanced Capabilities Available:
+    1. Real-time bidirectional audio streaming via Live API
+    2. Native speech generation with natural intonation
+    3. Comprehensive image, video, and audio understanding
+    4. URL content analysis and context extraction
+    5. Cross-modal learning opportunity identification
+    
+    Instructions:
+    1. Analyze all provided content (text, images, video, audio, URLs) holistically
+    2. Identify cross-modal learning opportunities and connections
+    3. Generate contextually appropriate vocabulary and phrases
+    4. Provide rich cultural insights and context
+    5. Create interactive learning elements leveraging all modalities
+    6. Suggest personalized practice activities
+    7. Maintain appropriate difficulty level while challenging the learner
+    8. Use native speech generation for pronunciation modeling
+    
+    Focus on creating immersive, culturally authentic learning experiences that leverage the full power of multimodal AI.`;
   }
 }
 ```
@@ -963,6 +1216,51 @@ class MultimodalContentGenerator {
 3. **Advanced Features Development** (Month 2-3)
 4. **Mobile App Development** (Month 4-6)
 5. **Commercial Launch Preparation** (Month 6-12)
+
+## Monetization Strategy (if applicable): Refined model.
+
+## Hackathon Alignment: Addressing Challenges & Criteria
+
+This project directly addresses the Trae AI & Google GenAI Hackathon's core objectives and success criteria:
+
+### Hackathon Challenge: "Use TRAE IDE to build high-impact applications or developer tools that show what's possible when code meets intelligent support."
+
+- **Prototyping Full-Stack Applications**: We are designing and building a complete language learning platform, from backend logic (AI integration, data management) to frontend components (interactive UI, voice interfaces), fully leveraging Trae AI's capabilities for accelerated development.
+- **Automating Development Workflows**: Trae AI will be instrumental in generating boilerplate code, suggesting implementations for AI service integrations (Gemini, Zilliz), creating database schemas, and potentially assisting with test generation and documentation, significantly speeding up the 30-hour development cycle.
+- **Creating Helpful Dev Tools/Agents (Implicitly)**: While the primary output is an application, the process of using Trae AI to build it showcases its power as an intelligent assistant. The structured plan itself, refined with AI, serves as a blueprint that Trae can interpret and act upon.
+
+### Success Criteria:
+
+1.  **Application of Technology (Google Gemini & Zilliz):**
+    *   **Gemini 2.5 Integration**: The plan emphasizes deep integration of various Gemini 2.5 capabilities:
+        *   **Live API**: Core to the interactive conversation practice, providing real-time, low-latency voice interaction.
+        *   **Multimodal Understanding (Video, Audio, Image)**: Used to create diverse and engaging learning exercises (e.g., describing an image, understanding a video dialogue, reacting to audio cues).
+        *   **URL Context**: Enables dynamic content generation from real-world web sources, making learning relevant and current.
+        *   **Speech Generation**: Provides natural AI tutor voices.
+        *   **Advanced Reasoning (Gemini 2.5 Pro)**: Powers the adaptive assessment engine, personalized content generation, and nuanced feedback.
+    *   **Zilliz Cloud (Milvus)**: Crucial for:
+        *   **Adaptive Assessment**: Matching user responses (embeddings) to proficiency benchmarks.
+        *   **Personalized Content**: Finding semantically similar learning materials tailored to user profiles and progress.
+        *   **Smart Review**: Identifying and retrieving content for spaced repetition based on vector similarity of learned concepts.
+    *   **Effectiveness**: The integration is not superficial; these technologies are fundamental to the core value proposition of personalized, adaptive, and interactive learning.
+
+2.  **Business Value:**
+    *   **Addresses a Real Need**: Personalized and accessible language learning is a significant market.
+    *   **Scalability**: The cloud-native architecture (Vercel, Neon, Zilliz Cloud, Gemini APIs) is designed for scale.
+    *   **Innovation**: The combination of adaptive AI, multimodal interaction, and vector-database-powered personalization offers a novel approach.
+    *   **Practicality**: The MVP is scoped for a 30-hour hackathon, demonstrating rapid value delivery.
+
+3.  **Originality:**
+    *   **Unique Synthesis**: While components exist, the specific combination of Gemini 2.5's full multimodal suite with Zilliz for deep personalization in a language learning context is innovative.
+    *   **Real-time Adaptivity**: The proposed level of real-time adaptation in conversation and content, driven by continuous assessment and vector similarity, pushes beyond typical language apps.
+    *   **Pedagogical Integration**: Grounding AI features in learning principles like ZPD and scaffolding adds a layer of educational thoughtfulness.
+
+4.  **Presentation:**
+    *   **Clear Vision**: This architectural plan provides a clear roadmap for development.
+    *   **Interactive Demo Potential**: The features (voice conversation, multimodal exercises) are inherently demonstrable and engaging.
+    *   **Impactful Story**: The narrative of solving common language learning pain points with cutting-edge AI is compelling.
+
+By focusing on these aspects, the project aims to be a strong contender, showcasing how Trae AI, Google Gemini, and Zilliz can be combined to create a high-impact, innovative application within the hackathon's constraints.
 
 ---
 
