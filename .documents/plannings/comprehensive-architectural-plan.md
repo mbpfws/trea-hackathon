@@ -159,17 +159,25 @@ Flow:
 - **Integration**: Seamless Next.js integration
 
 #### AI Integration
-**Google Gemini 2.5 Models + Vertex AI SDK**
-- **Core Language Model**: Gemini 2.5 Pro for advanced reasoning, conversation, and multimodal content generation.
-- **Specialized Models & APIs**:
-    - **Gemini Live API**: For real-time, bidirectional audio streaming, enabling truly interactive voice conversations and immediate feedback. ([`https://ai.google.dev/gemini-api/docs/live`](https://ai.google.dev/gemini-api/docs/live))
-    - **URL Contextualization**: Gemini models can process content from URLs, allowing the platform to generate learning materials based on real-world articles, blog posts, or documentation. ([`https://ai.google.dev/gemini-api/docs/url-context`](https://ai.google.dev/gemini-api/docs/url-context))
-    - **Video Understanding**: Incorporate video content (e.g., short clips, dialogues) for comprehension exercises. Gemini can analyze video frames and audio. ([`https://ai.google.dev/gemini-api/docs/video-understanding`](https://ai.google.dev/gemini-api/docs/video-understanding))
-    - **Audio Understanding**: Process and understand various audio inputs beyond speech, such as environmental sounds or music, for richer contextual learning. ([`https://ai.google.dev/gemini-api/docs/audio`](https://ai.google.dev/gemini-api/docs/audio))
-    - **Image Understanding**: Generate vocabulary exercises, descriptive tasks, or cultural context from images. ([`https://ai.google.dev/gemini-api/docs/image-understanding`](https://ai.google.dev/gemini-api/docs/image-understanding))
-    - **Speech Generation (Text-to-Speech)**: Utilize Google's high-quality, natural-sounding TTS for AI tutor responses and audio content. ([`https://ai.google.dev/gemini-api/docs/speech-generation`](https://ai.google.dev/gemini-api/docs/speech-generation))
-- **SDK Integration**: Vertex AI SDK for robust interaction with Gemini models, including streaming, function calling, and managing multimodal inputs/outputs.
-- **Fallback**: Consider a smaller, efficient open-source model for less critical tasks if needed, but primary reliance is on Gemini 2.5.
+**Google Gemini 2.5 Models + Vertex AI SDK (Latest Generation)**
+- **Primary Models**:
+    - **Gemini 2.5 Pro**: Advanced reasoning, complex analysis, deep content generation, and sophisticated multimodal understanding
+    - **Gemini 2.5 Flash**: Ultra-fast responses, real-time interactions, quick translations, and live conversation capabilities
+    - **Gemini 2.5 Flash-8B**: Lightweight model for high-frequency operations and basic tasks
+
+- **Native Multimodal Capabilities**:
+    - **Gemini Live API**: Real-time, bidirectional audio streaming for truly interactive voice conversations with immediate feedback and natural conversation flow ([`https://ai.google.dev/gemini-api/docs/live`](https://ai.google.dev/gemini-api/docs/live))
+    - **Advanced URL Context Processing**: Native ability to process and understand content from URLs, enabling generation of learning materials from real-world articles, blogs, and documentation ([`https://ai.google.dev/gemini-api/docs/url-context`](https://ai.google.dev/gemini-api/docs/url-context))
+    - **Comprehensive Video Understanding**: Deep analysis of video content including dialogue comprehension, visual context understanding, and cultural nuance extraction ([`https://ai.google.dev/gemini-api/docs/video-understanding`](https://ai.google.dev/gemini-api/docs/video-understanding))
+    - **Advanced Audio Processing**: Understanding of complex audio inputs including environmental sounds, music, pronunciation patterns, and cultural audio context ([`https://ai.google.dev/gemini-api/docs/audio`](https://ai.google.dev/gemini-api/docs/audio))
+    - **Sophisticated Image Understanding**: Advanced visual analysis for vocabulary exercises, cultural context extraction, and descriptive learning tasks ([`https://ai.google.dev/gemini-api/docs/image-understanding`](https://ai.google.dev/gemini-api/docs/image-understanding))
+    - **Native Speech Generation**: High-quality, natural-sounding text-to-speech with pronunciation guidance, stress patterns, and educational optimization ([`https://ai.google.dev/gemini-api/docs/speech-generation`](https://ai.google.dev/gemini-api/docs/speech-generation))
+
+- **Integration Strategy**: 
+    - Vertex AI SDK for robust model interaction with streaming, function calling, and multimodal I/O
+    - Dual-model approach: Gemini 2.5 Flash for real-time interactions, Gemini 2.5 Pro for deep analysis
+    - Native multimodal processing eliminates need for separate vision/audio services
+    - Live API integration for seamless conversational experiences
 
 #### Vector Database
 **Zilliz Cloud (Managed Milvus)**
@@ -754,6 +762,120 @@ class GeminiLiveConversationEngine {
     6. Use multimodal capabilities when helpful (describe images, etc.)
     
     Always maintain an encouraging, patient tone while providing constructive feedback.`;
+   }
+   
+   // Combine multiple audio segments into a single track
+   private async combineAudioSegments(speechResponses: any[]): Promise<ArrayBuffer> {
+     // Implementation would use Web Audio API or similar
+     const audioContext = new AudioContext();
+     const combinedBuffer = audioContext.createBuffer(
+       1, // mono
+       speechResponses.length * 48000, // estimated length
+       24000 // sample rate
+     );
+     
+     let offset = 0;
+     for (const response of speechResponses) {
+       const audioBuffer = await audioContext.decodeAudioData(response.audioData);
+       combinedBuffer.copyToChannel(audioBuffer.getChannelData(0), 0, offset);
+       offset += audioBuffer.length;
+     }
+     
+     return this.audioBufferToArrayBuffer(combinedBuffer);
+   }
+   
+   // Create interactive pronunciation guide
+   private async createPronunciationGuide(speechResponses: any[], context: LearningContext) {
+     return {
+       phrases: speechResponses.map(response => ({
+         text: response.phrase,
+         phonetic: response.phonetics,
+         audioSegment: response.audioData,
+         wordBreakdown: response.wordTimings,
+         stressPattern: response.stressPatterns,
+         tips: response.pronunciationTips,
+         difficulty: this.assessPronunciationDifficulty(response.phrase, context)
+       })),
+       practiceExercises: await this.generatePronunciationExercises(speechResponses, context),
+       progressTracking: {
+         targetAccuracy: 85,
+         currentSession: 0,
+         improvementAreas: []
+       }
+     };
+   }
+   
+   // Convert AudioBuffer to ArrayBuffer
+   private audioBufferToArrayBuffer(audioBuffer: AudioBuffer): ArrayBuffer {
+     const length = audioBuffer.length * audioBuffer.numberOfChannels * 2;
+     const arrayBuffer = new ArrayBuffer(length);
+     const view = new Int16Array(arrayBuffer);
+     
+     let offset = 0;
+     for (let channel = 0; channel < audioBuffer.numberOfChannels; channel++) {
+       const channelData = audioBuffer.getChannelData(channel);
+       for (let i = 0; i < channelData.length; i++) {
+         view[offset++] = Math.max(-1, Math.min(1, channelData[i])) * 0x7FFF;
+       }
+     }
+     
+     return arrayBuffer;
+   }
+   
+   // Assess pronunciation difficulty
+   private assessPronunciationDifficulty(phrase: string, context: LearningContext): string {
+     // Simple heuristic - could be enhanced with ML
+     const complexSounds = /[θðʃʒtʃdʒ]/g;
+     const matches = phrase.match(complexSounds);
+     const difficulty = matches ? matches.length : 0;
+     
+     if (difficulty === 0) return 'easy';
+     if (difficulty <= 2) return 'medium';
+     return 'hard';
+   }
+   
+   // Generate pronunciation exercises
+   private async generatePronunciationExercises(speechResponses: any[], context: LearningContext) {
+     return {
+       shadowingExercise: {
+         description: 'Listen and repeat immediately after the audio',
+         audioSegments: speechResponses.map(r => r.audioData),
+         pauseDuration: 2000 // ms
+       },
+       phoneticDrills: {
+         description: 'Focus on specific sounds',
+         targetSounds: this.extractDifficultSounds(speechResponses, context),
+         practiceWords: await this.generatePhoneticPracticeWords(speechResponses, context)
+       },
+       stressPatternPractice: {
+         description: 'Practice word and sentence stress',
+         patterns: speechResponses.map(r => r.stressPatterns),
+         exercises: await this.generateStressExercises(speechResponses)
+       }
+     };
+   }
+   
+   // Extract difficult sounds for targeted practice
+   private extractDifficultSounds(speechResponses: any[], context: LearningContext): string[] {
+     // Implementation would analyze phonetic transcriptions
+     // and identify sounds that are typically difficult for speakers of the native language
+     return ['θ', 'ð', 'ʃ', 'ʒ']; // placeholder
+   }
+   
+   // Generate phonetic practice words
+   private async generatePhoneticPracticeWords(speechResponses: any[], context: LearningContext): Promise<string[]> {
+     // Would use Gemini to generate words focusing on specific sounds
+     return ['think', 'this', 'ship', 'measure']; // placeholder
+   }
+   
+   // Generate stress pattern exercises
+   private async generateStressExercises(speechResponses: any[]): Promise<any[]> {
+     return speechResponses.map(response => ({
+       phrase: response.phrase,
+       stressPattern: response.stressPatterns,
+       exercise: 'Mark the stressed syllables and practice the rhythm'
+     }));
+   }
   }
 }
 ```
