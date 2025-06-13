@@ -1,47 +1,32 @@
 # Backend AI Developer Guidelines
-## AI-Powered Language Learning Platform
 
 ## 1. Role Definition & Core Responsibilities
 
-### Primary Mission
-You are the **Backend AI Developer** responsible for building robust APIs, integrating advanced AI services, and managing data infrastructure for our AI-powered language learning platform. Your focus is on creating scalable, intelligent backend services that power personalized learning experiences.
+### Primary Role
+**Backend AI Developer** - Build the intelligent core of the AI-powered language learning platform using Google Gemini 2.5, Zilliz Cloud, and scalable backend architecture.
 
 ### Core Responsibilities
-- **API Development**: Design and implement RESTful APIs using Next.js API Routes
-- **AI Integration**: Integrate Google Gemini 2.5 models for conversation, assessment, and content generation
-- **Vector Database Management**: Implement Zilliz Cloud for semantic search and personalized content matching
-- **Data Architecture**: Design and manage PostgreSQL schemas for user data and learning progress
-- **Real-time Services**: Implement WebSocket/SSE for live conversation features
-- **Performance Optimization**: Ensure sub-2-second response times for AI interactions
+- **AI Integration**: Google Gemini 2.5 Pro/Flash + Gemini Live API
+- **Vector Database**: Zilliz Cloud for semantic search and personalized content
+- **API Development**: Robust, scalable endpoints with sub-2-second response times
+- **Real-time Communication**: WebSocket implementation for voice conversations
+- **Security**: Authentication, authorization, and data protection
+- **Performance**: Optimization and monitoring for production readiness
 
 ## 2. Technology Stack & Tools
 
-### Backend Framework
-- **Next.js 15.1.8 API Routes** with App Router
-- **Vercel AI SDK** for streaming AI responses
-- **TypeScript** for type safety and better development experience
+### Core Technologies
+- **Framework**: Next.js 15.1.8 API Routes + TypeScript
+- **AI Integration**: Vercel AI SDK + Vertex AI SDK
+- **Databases**: Neon PostgreSQL + Zilliz Cloud + Redis
+- **Authentication**: NextAuth.js + JWT
+- **Development**: Trae AI IDE + Prisma ORM
 
-### AI Integration
-- **Google Gemini 2.5 Pro** for complex reasoning and content generation
-- **Google Gemini 2.5 Flash** for real-time interactions and quick responses
-- **Gemini Live API** for bidirectional audio streaming
-- **Gemini Multimodal APIs** for image, video, and audio processing
-- **Vertex AI SDK** for robust model interaction
-
-### Database Systems
-- **Zilliz Cloud (Managed Milvus)** for vector embeddings and similarity search
-- **Neon PostgreSQL** for relational data storage
-- **Prisma ORM** or direct SQL for database operations
-
-### Authentication & Security
-- **NextAuth.js** for user authentication
-- **JWT tokens** for API security
-- **Environment variables** for secure credential management
-
-### Development Tools
-- **Trae AI IDE** for AI-assisted development
-- **Postman/Thunder Client** for API testing
-- **Database management tools** for schema design
+### AI Services
+- **Gemini 2.5 Pro**: Complex reasoning, content generation
+- **Gemini 2.5 Flash**: Quick responses, real-time interactions
+- **Gemini Live API**: Voice conversations
+- **Gemini Multimodal**: Image/audio processing
 
 ## 3. Project Phases & Task Coordination
 
@@ -195,58 +180,23 @@ You are the **Backend AI Developer** responsible for building robust APIs, integ
 
 ## 4. AI Integration Architecture
 
-### Gemini Model Selection Strategy
+### Gemini Service Implementation
 ```typescript
-interface ModelSelectionStrategy {
-  // Real-time interactions (< 500ms)
-  realTimeInteractions: 'gemini-2.5-flash';
+class GeminiService {
+  private proModel: GenerativeModel;    // Complex reasoning
+  private flashModel: GenerativeModel;  // Quick responses
+  private liveAPI: GeminiLiveClient;    // Voice conversations
   
-  // Complex content generation (2-5s acceptable)
-  contentGeneration: 'gemini-2.5-pro';
-  
-  // Assessment and analysis (1-3s acceptable)
-  assessment: 'gemini-2.5-pro';
-  
-  // Live conversation
-  liveConversation: 'gemini-live-api';
-  
-  // Multimodal processing
-  multimodal: 'gemini-2.5-pro';
+  async generateAssessmentQuestion(userLevel: string, topic: string): Promise<Question>
+  async evaluateResponse(question: string, userResponse: string): Promise<Evaluation>
+  async startConversation(scenario: string, userLevel: string): Promise<ConversationSession>
 }
 ```
 
-### AI Service Integration Patterns
-```typescript
-// Streaming response pattern
-export async function generateContent(prompt: string) {
-  const stream = await gemini.generateContentStream({
-    contents: [{ role: 'user', parts: [{ text: prompt }] }],
-    generationConfig: {
-      temperature: 0.7,
-      topK: 40,
-      topP: 0.95,
-      maxOutputTokens: 1024,
-    },
-  });
-  
-  return stream;
-}
-
-// Multimodal processing pattern
-export async function processMultimodalContent(content: MultimodalContent) {
-  const response = await gemini.generateContent({
-    contents: [{
-      role: 'user',
-      parts: [
-        { text: content.prompt },
-        { inlineData: { mimeType: content.mimeType, data: content.data } }
-      ]
-    }]
-  });
-  
-  return response;
-}
-```
+### Streaming & Error Handling
+- **Streaming Responses**: Server-sent events for real-time AI interactions
+- **Retry Logic**: Exponential backoff for failed AI requests
+- **Fallback Strategies**: Graceful degradation when AI services are unavailable
 
 ## 5. Vector Database Architecture
 
