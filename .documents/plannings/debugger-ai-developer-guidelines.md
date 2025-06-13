@@ -1,43 +1,169 @@
 # Debugger AI Developer Guidelines
-## AI-Powered Language Learning Platform
 
 ## 1. Role Definition & Core Responsibilities
 
-### Primary Mission
-You are the **Debugger AI Developer** responsible for ensuring code quality, system reliability, and optimal performance across the entire AI-powered language learning platform. Your role is critical for maintaining high standards and preventing issues that could derail the hackathon timeline.
+### Primary Role
+**Position**: Debugger AI Developer  
+**Mission**: Ensure quality, performance, and reliability of the AI-powered language learning platform through comprehensive testing, debugging, and optimization.
 
 ### Core Responsibilities
-- **Quality Assurance**: Conduct comprehensive testing of frontend and backend components
-- **Code Review & Refactoring**: Optimize code structure, performance, and maintainability
-- **Integration Testing**: Ensure seamless interaction between AI services, databases, and UI components
-- **Performance Optimization**: Identify and resolve bottlenecks in AI response times and user interactions
-- **Error Handling**: Implement robust error recovery and user-friendly error messages
-- **Deployment Validation**: Ensure production readiness and smooth deployment processes
+- **Quality Assurance**: Code reviews, testing frameworks, bug detection, quality gates
+- **Performance Optimization**: Load testing, bottleneck identification, resource optimization
+- **Integration Testing**: End-to-end workflows, API testing, AI service validation
+- **Error Handling**: Error monitoring, graceful degradation, recovery procedures
+- **Deployment Validation**: Pre-deployment testing, production monitoring, rollback procedures
 
-## 2. Technology Stack & Testing Tools
+## 2. Technology Stack & Tools
 
 ### Testing Frameworks
-- **Jest** for unit testing JavaScript/TypeScript code
-- **React Testing Library** for frontend component testing
-- **Playwright** for end-to-end testing
-- **Postman/Newman** for API testing
-- **Artillery** for load testing
+- **Frontend**: Jest, React Testing Library, Playwright, Storybook, MSW
+- **Backend**: Jest, Supertest, Prisma Test Environment, Artillery, Newman
+- **AI Services**: Gemini API testing, prompt validation, response quality checks
+- **Vector DB**: Zilliz Cloud testing, embedding validation, search accuracy
 
-### Development Tools
-- **Trae AI IDE** for AI-assisted debugging and code analysis
-- **Chrome DevTools** for frontend performance analysis
-- **Vercel Analytics** for production monitoring
-- **Sentry** for error tracking and monitoring
-
-### Code Quality Tools
-- **ESLint** for code linting and style enforcement
-- **Prettier** for code formatting
-- **TypeScript** for type checking and error prevention
-- **SonarQube** for code quality analysis
+### Development & Debugging Tools
+- **Code Quality**: ESLint, Prettier, TypeScript, SonarQube, Husky
+- **Debugging**: Chrome DevTools, React DevTools, Vercel Analytics, Sentry
+- **Performance**: Lighthouse, WebPageTest, Artillery, k6, Chrome Performance
+- **IDE**: Trae AI IDE for integrated development and debugging
 
 ## 3. Project Phases & Task Coordination
 
-### Phase 1: Foundation Setup (Hours 1-6)
+### Phase 1: Foundation Setup (Hours 1-8)
+- **Testing Infrastructure**: Jest, React Testing Library, Playwright setup
+- **Quality Gates**: ESLint, Prettier, SonarQube configuration
+- **Integration Testing**: Database, API, AI service validation
+- **Performance Baseline**: Monitoring tools and metrics establishment
+- **Coordination**: Testing compatibility with component architecture
+
+### Phase 2: Core Features Testing (Hours 9-16)
+- **AI Integration**: Gemini API testing, conversation flows, streaming responses
+- **Vector Database**: Zilliz Cloud operations, embedding validation, search accuracy
+- **Frontend Components**: React component testing, user interactions, accessibility
+- **API Testing**: Endpoint validation, authentication, error handling
+- **Coordination**: Mock data requirements and API behavior validation
+
+### Phase 3: Advanced Features & Optimization (Hours 17-24)
+- **End-to-End Testing**: Complete user journeys, cross-browser compatibility
+- **Performance Optimization**: Load testing, bottleneck identification, query optimization
+- **Error Handling**: Recovery mechanisms, graceful degradation, offline functionality
+- **Security Testing**: Authentication, data encryption, input validation
+- **Coordination**: UI/UX testing and security measure validation
+
+### Phase 4: Demo Preparation & Final Validation (Hours 25-30)
+- **Demo Scenarios**: User journey testing, demo data validation, presentation flow
+- **Production Deployment**: Environment testing, monitoring, rollback procedures
+- **Final QA**: System validation, quality metrics review, documentation
+- **Coordination**: Final demo rehearsal and contingency planning
+
+## 4. Testing Strategy & Implementation
+
+### Unit Testing
+- **Frontend**: React component testing with Jest and React Testing Library
+- **Backend**: API service testing with Jest and Supertest
+- **AI Services**: Gemini API response validation and error handling
+- **Vector DB**: Zilliz Cloud operations and search accuracy testing
+
+### Integration Testing
+- **API Integration**: End-to-end API workflow testing
+- **Database Integration**: Data persistence and retrieval validation
+- **AI Service Integration**: Complete AI workflow testing
+- **Authentication**: User auth flow and session management
+
+### End-to-End Testing
+- **User Journeys**: Complete learning workflows with Playwright
+- **Cross-browser**: Chrome, Firefox, Safari compatibility
+- **Mobile Responsive**: Testing across different screen sizes
+- **Performance**: Load testing with Artillery and k6
+
+## 5. Performance Testing & Optimization
+
+### Performance Targets
+- **Page Load**: < 3 seconds initial load
+- **API Response**: < 2 seconds for AI generation
+- **Vector Search**: < 1 second for similarity queries
+- **Real-time Features**: < 200ms latency
+
+### Optimization Areas
+- **Bundle Size**: Code splitting and lazy loading
+- **API Caching**: Redis caching for frequent requests
+- **Database Queries**: Query optimization and indexing
+- **AI Response**: Streaming and caching strategies
+
+## 6. Error Handling & Recovery
+
+### Error Monitoring
+- **Frontend**: React Error Boundaries and Sentry integration
+- **Backend**: Comprehensive logging with Winston
+- **AI Services**: Fallback mechanisms for API failures
+- **Database**: Connection pooling and retry logic
+
+### Recovery Strategies
+- **Graceful Degradation**: Offline functionality where possible
+- **User Feedback**: Clear error messages and recovery instructions
+- **Automatic Retry**: Intelligent retry mechanisms for transient failures
+- **Fallback Content**: Static content when AI services are unavailable
+
+## 7. Code Quality & Refactoring
+
+### Quality Standards
+- **TypeScript**: Strict mode, no `any` types, comprehensive type coverage
+- **ESLint**: Enforce coding standards and best practices
+- **Prettier**: Consistent code formatting across all files
+- **Test Coverage**: Minimum 80% coverage for critical paths
+- **Performance**: All components and APIs meet performance targets
+
+### Refactoring Patterns
+- **Component Optimization**: Memoization, lazy loading, code splitting
+- **API Optimization**: Caching, batching, error handling
+- **Database Optimization**: Query optimization, indexing, connection pooling
+- **Bundle Optimization**: Tree shaking, dynamic imports, asset optimization
+
+## 8. Deployment & Production Validation
+
+### Pre-deployment Checklist
+- [ ] All tests passing (unit, integration, E2E)
+- [ ] Performance benchmarks met
+- [ ] Security scan completed
+- [ ] Error handling validated
+- [ ] Monitoring and logging configured
+- [ ] Demo scenarios tested
+
+### Production Monitoring
+- **Health Checks**: API endpoints, database, AI services, vector DB
+- **Performance Metrics**: Response times, error rates, user engagement
+- **Error Tracking**: Real-time error monitoring and alerting
+- **User Analytics**: Usage patterns and system performance
+
+## 9. Communication & Coordination
+
+### Team Collaboration
+- **Daily Standups**: Progress updates and blocker identification
+- **Code Reviews**: Quality assurance and knowledge sharing
+- **Testing Coordination**: Shared testing strategies and data
+- **Documentation**: Test results, performance reports, deployment guides
+
+### Quality Gates
+- **Feature Completion**: Comprehensive testing before feature sign-off
+- **Integration Points**: Validation of component interactions
+- **Performance Milestones**: Regular performance review and optimization
+- **Demo Readiness**: Final validation and rehearsal
+
+## 10. Success Criteria
+
+### Final Deliverables
+- [ ] Comprehensive test suite with 80%+ coverage
+- [ ] Performance optimization achieving all targets
+- [ ] Robust error handling and recovery mechanisms
+- [ ] Production-ready deployment with monitoring
+- [ ] Demo scenarios validated and rehearsed
+- [ ] Quality documentation and handover materials
+
+> **📋 Reference**: See `project-rules.md` for comprehensive project guidelines, technical specifications, and detailed coordination protocols.
+
+### Detailed Task Breakdown
+
+#### Phase 1: Foundation Setup (Hours 1-8)
 **Your Tasks: 1 hour total**
 
 #### Task 1.6: Testing Infrastructure Setup (60 minutes)
@@ -49,7 +175,7 @@ You are the **Debugger AI Developer** responsible for ensuring code quality, sys
 - **Deliverable**: Complete testing infrastructure
 - **Coordination**: Provide testing guidelines to both Frontend and Backend developers
 
-### Phase 2: Core Features Development (Hours 7-20)
+#### Phase 2: Core Features Development (Hours 7-20)
 
 #### 2.1 Adaptive Assessment Engine (Hours 7-10)
 **Your Tasks: 1 hour**
@@ -124,7 +250,7 @@ You are the **Debugger AI Developer** responsible for ensuring code quality, sys
 - Verify achievement tracking logic
 - **Deliverable**: Progress tracking validation
 
-### Phase 3: Enhancement & Polish (Hours 21-26)
+#### Phase 3: Enhancement & Polish (Hours 21-26)
 
 #### 3.1 Multimodal Learning Features (Hours 21-23)
 **Your Tasks: 1 hour**
@@ -166,7 +292,7 @@ You are the **Debugger AI Developer** responsible for ensuring code quality, sys
   ```
 - **Deliverable**: Performance optimization report and implementations
 
-### Phase 4: Final Integration & Deployment (Hours 27-30)
+#### Phase 4: Final Integration & Deployment (Hours 27-30)
 **Your Tasks: 3 hours**
 
 #### Task 4.1: End-to-End Testing (90 minutes)
